@@ -45,12 +45,13 @@ export function startServer(port: number) {
   const indexer = new IndexerService();
   indexer.startWatching();
   
-  server.listen(port, () => {
+  server.listen(port, '0.0.0.0', () => {
     console.log(`[Server] Aegis Swarm Backend running on port ${port}`);
   });
 }
 
 // Automatically start the server if not in test environment
 if (process.env.NODE_ENV !== 'test') {
-  startServer(3001);
+  const port = process.env.PORT ? parseInt(process.env.PORT) : 3001;
+  startServer(port);
 }
