@@ -3,115 +3,103 @@ pragma solidity ^0.8.24;
 
 /**
  * @title ThreatRegistry
- * @notice On-chain database of known attack signatures and vulnerability patterns.
- *         Updated autonomously by the Archivist Agent from external threat intelligence.
- *         Used by the Sentinel Agent for fast signature matching.
- *
- * @dev TODO: Implement full CRUD logic in Phase 2.
+ * @notice Centralized on-chain registry for threat signatures and incident tracking.
+ * @dev Emits extensive events for external indexing. Access controlled to AegisController.
  */
 contract ThreatRegistry {
     // ─── Events ──────────────────────────────────────────────────────────────
-
-    event SignatureAdded(bytes32 indexed signatureHash, string attackVector, uint256 severity);
-    event SignatureUpdated(bytes32 indexed signatureHash, uint256 newOccurrenceCount);
-    event SignatureDeactivated(bytes32 indexed signatureHash);
-    event ProactiveScanTriggered(bytes32 indexed signatureHash, address indexed target);
-
-    // ─── Errors ──────────────────────────────────────────────────────────────
-
-    error SignatureAlreadyExists(bytes32 signatureHash);
-    error SignatureNotFound(bytes32 signatureHash);
-    error Unauthorized();
+    event ThreatSignatureAdded(uint256 indexed signatureId, string attackVector, uint256 severity);
+    event IncidentLogged(uint256 indexed incidentId, address indexed protocol, uint256 severity, string actionTaken, uint256 blockNumber);
 
     // ─── Structs ─────────────────────────────────────────────────────────────
-
     struct ThreatSignature {
-        bytes32 signatureHash;
-        string  attackVector;    // e.g., "FLASH_LOAN_REENTRANCY"
-        uint256 severity;        // 0-100
-        uint256 firstSeenBlock;
-        uint256 lastSeenBlock;
-        uint256 occurrenceCount;
-        string  description;
-        bool    active;
+        uint256 id;
+        string attackVector;
+        uint256 severity;
+        bool isActive;
     }
 
-    // ─── State ───────────────────────────────────────────────────────────────
+    struct Incident {
+        uint256 id;
+        address protocol;
+        uint256 severity;
+        string actionTaken;
+        uint256 timestamp;
+        uint256 blockNumber;
+    }
 
-    mapping(bytes32 => ThreatSignature) public signatures;
-    bytes32[] public signatureIndex;
-
-    address public immutable aegisCore;
+    // ─── State Variables ─────────────────────────────────────────────────────
     address public owner;
+    address public aegisController;
+
+    uint256 public nextSignatureId = 1;
+    uint256 public nextIncidentId = 1;
+
+    mapping(uint256 => ThreatSignature) public signatures;
+    mapping(uint256 => Incident) public incidents;
+    mapping(address => uint256[]) public protocolIncidents;
+
+    // ─── Modifiers ───────────────────────────────────────────────────────────
+    modifier onlyOwner() {
+        require(msg.sender == owner, "ThreatRegistry: caller is not the owner");
+        _;
+    }
+
+    modifier onlyAuthorized() {
+        require(msg.sender == owner || msg.sender == aegisController, "ThreatRegistry: unauthorized");
+        _;
+    }
 
     // ─── Constructor ─────────────────────────────────────────────────────────
-
-    constructor(address _aegisCore) {
-        aegisCore = _aegisCore;
+    constructor() {
         owner = msg.sender;
     }
 
-    // ─── Write Functions (stubbed) ────────────────────────────────────────────
+    // ─── Administration ──────────────────────────────────────────────────────
+    function setAegisController(address _aegisController) external onlyOwner {
+        require(_aegisController != address(0), "ThreatRegistry: invalid address");
+        aegisController = _aegisController;
+    }
 
-    function addSignature(
-        bytes32 signatureHash,
-        string calldata attackVector,
-        uint256 severity,
-        string calldata description
-    ) external {
-        // TODO: Access control (onlyAegisCore || onlyOwner)
-        // TODO: Validate severity range [0, 100]
-
-        signatures[signatureHash] = ThreatSignature({
-            signatureHash:   signatureHash,
-            attackVector:    attackVector,
-            severity:        severity,
-            firstSeenBlock:  block.number,
-            lastSeenBlock:   block.number,
-            occurrenceCount: 1,
-            description:     description,
-            active:          true
+    // ─── Operations ──────────────────────────────────────────────────────────
+    /**
+     * @notice Adds a known threat signature.
+     */
+    function addThreatSignature(string calldata attackVector, uint256 severity) external onlyAuthorized returns (uint256) {
+        uint256 id = nextSignatureId++;
+        signatures[id] = ThreatSignature({
+            id: id,
+            attackVector: attackVector,
+            severity: severity,
+            isActive: true
         });
 
-        signatureIndex.push(signatureHash);
-        emit SignatureAdded(signatureHash, attackVector, severity);
+        emit ThreatSignatureAdded(id, attackVector, severity);
+        return id;
     }
 
-    function recordOccurrence(bytes32 signatureHash) external {
-        // TODO: onlyAegisCore
-        ThreatSignature storage sig = signatures[signatureHash];
-        if (!sig.active) revert SignatureNotFound(signatureHash);
-        sig.occurrenceCount++;
-        sig.lastSeenBlock = block.number;
-        emit SignatureUpdated(signatureHash, sig.occurrenceCount);
+    /**
+     * @notice Logs a new security incident.
+     */
+    function logIncident(address protocol, uint256 severity, string calldata actionTaken) external onlyAuthorized returns (uint256) {
+        uint256 id = nextIncidentId++;
+        incidents[id] = Incident({
+            id: id,
+            protocol: protocol,
+            severity: severity,
+            actionTaken: actionTaken,
+            timestamp: block.timestamp,
+            blockNumber: block.number
+        });
+
+        protocolIncidents[protocol].push(id);
+
+        emit IncidentLogged(id, protocol, severity, actionTaken, block.number);
+        return id;
     }
 
-    function deactivateSignature(bytes32 signatureHash) external {
-        // TODO: onlyOwner || onlyGovernance
-        signatures[signatureHash].active = false;
-        emit SignatureDeactivated(signatureHash);
-    }
-
-    // ─── Read Functions ───────────────────────────────────────────────────────
-
-    function signatureExists(bytes32 signatureHash) external view returns (bool) {
-        return signatures[signatureHash].active;
-    }
-
-    function getSignature(bytes32 signatureHash)
-        external
-        view
-        returns (ThreatSignature memory)
-    {
-        return signatures[signatureHash];
-    }
-
-    function getSignatureCount() external view returns (uint256) {
-        return signatureIndex.length;
-    }
-
-    function getAllActiveSignatures() external view returns (bytes32[] memory) {
-        // TODO: Filter to active only for gas efficiency
-        return signatureIndex;
+    // ─── View Functions ──────────────────────────────────────────────────────
+    function getIncidentCount(address protocol) external view returns (uint256) {
+        return protocolIncidents[protocol].length;
     }
 }

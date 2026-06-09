@@ -1,26 +1,215 @@
 @import "tailwindcss";
+@import "tw-animate-css";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
+/* ─── Tailwind v4 Theme Configuration ───────────────────────────────────── */
+@theme {
+  /* Shadcn variables mapped to Tailwind utility values */
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+  /* Aegis Swarm Premium Brand Colors (Dark Luxury Navy Palette) */
+  --color-aegis-base: #030712;
+  --color-aegis-surface: #090f1d;
+  --color-aegis-elevated: #11182c;
+  --color-aegis-border: rgba(255, 255, 255, 0.04);
+  
+  --color-aegis-cyan: #00f0ff;
+  --color-aegis-amber: #fbbf24;
+  --color-aegis-red: #f43f5e;
+  --color-aegis-green: #10b981;
+  --color-aegis-purple: #a855f7;
+  --color-aegis-text: #f8fafc;
+  --color-aegis-muted: #94a3b8;
+
+  /* Custom typography variable extensions */
+   --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+   --font-mono: var(--font-mono), ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+   --font-display: var(--font-display), ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+
+  /* Keyframe animations and key definitions */
+  --animate-pulse-cyan: pulse-cyan 3s ease-in-out infinite;
+  --animate-pulse-red: pulse-red 2s ease-in-out infinite;
+  --animate-fade-in-up: fade-in-up 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  --animate-spin-slow: spin 20s linear infinite;
+  --animate-spin-reverse: spin 25s linear infinite reverse;
+  --animate-float: float 6s ease-in-out infinite;
+
+  @keyframes pulse-cyan {
+    0%, 100% { box-shadow: 0 0 12px rgba(0, 240, 255, 0.1); }
+    50% { box-shadow: 0 0 24px rgba(0, 240, 255, 0.3); }
+  }
+  @keyframes pulse-red {
+    0%, 100% { box-shadow: 0 0 12px rgba(244, 63, 94, 0.15); }
+    50% { box-shadow: 0 0 28px rgba(244, 63, 94, 0.45); }
+  }
+  @keyframes fade-in-up {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-6px); }
   }
 }
 
+/* ─── Design Tokens & CSS Custom Properties ─────────────────────────────── */
+:root {
+  /* Core variables */
+  --bg-base:      #030712;  /* deepest black-navy */
+  --bg-surface:   #090f1d;  /* card background */
+  --bg-elevated:  #11182c;  /* elevated panels */
+  --bg-border:    rgba(255, 255, 255, 0.04);
+
+  /* Text color variables */
+  --text-primary:   #f8fafc;  /* slate-50 */
+  --text-secondary: #94a3b8;  /* slate-400 */
+  --text-muted:     #475569;  /* slate-600 */
+
+  /* Brand Glow effects */
+  --glow-cyan:   0 0 20px rgba(0, 240, 255, 0.15);
+  --glow-red:    0 0 20px rgba(244, 63, 94, 0.25);
+  --glow-amber:  0 0 20px rgba(251, 191, 36, 0.15);
+  --glow-green:  0 0 20px rgba(16, 185, 129, 0.15);
+  --glow-purple: 0 0 20px rgba(168, 85, 247, 0.15);
+  
+  /* Shadcn variables mapped to hex codes */
+  --background:      #030712;
+  --foreground:      #f8fafc;
+  --card:            #090f1d;
+  --card-foreground: #f8fafc;
+  --popover:         #090f1d;
+  --popover-foreground: #f8fafc;
+  --primary:         #00f0ff;
+  --primary-foreground: #030712;
+  --secondary:       #11182c;
+  --secondary-foreground: #f8fafc;
+  --muted:           #11182c;
+  --muted-foreground: #94a3b8;
+  --accent:          #11182c;
+  --accent-foreground: #00f0ff;
+  --destructive:     #f43f5e;
+  --destructive-foreground: #f8fafc;
+  --border:          rgba(255, 255, 255, 0.04);
+  --input:           rgba(255, 255, 255, 0.04);
+  --ring:            #00f0ff;
+  --radius:          1rem;
+}
+
+/* ─── Base Browser Rules ────────────────────────────────────────────────── */
+@layer base {
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    border-color: var(--border);
+  }
+}
+
+html {
+  scroll-behavior: smooth;
+  font-family: var(--font-inter), system-ui, sans-serif;
+}
+
 body {
-  background: var(--background);
+  background-color: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ─── Scrollbar Customization ───────────────────────────────────────────── */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg-surface);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--bg-border);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-aegis-cyan);
+}
+
+/* ─── Custom Cyber Aesthetics ───────────────────────────────────────────── */
+.glass {
+  background: rgba(9, 15, 29, 0.65);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.glass-elevated {
+  background: rgba(17, 24, 44, 0.85);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.glass-panel {
+  background: linear-gradient(145deg, rgba(9, 15, 29, 0.55) 0%, rgba(17, 24, 44, 0.35) 100%);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.shadow-glass-inner {
+  box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.03), 0 4px 30px rgba(0, 0, 0, 0.4);
+}
+
+.gradient-bg {
+  background: radial-gradient(ellipse at top left, rgba(0, 240, 255, 0.03) 0%, transparent 50%),
+              radial-gradient(ellipse at bottom right, rgba(168, 85, 247, 0.03) 0%, transparent 50%),
+              var(--bg-base);
+}
+
+/* Custom text and card glows */
+.text-glow-cyan   { text-shadow: 0 0 10px rgba(0, 240, 255, 0.5); }
+.text-glow-red    { text-shadow: 0 0 10px rgba(244, 63, 94, 0.5); }
+.text-glow-amber  { text-shadow: 0 0 10px rgba(251, 191, 36, 0.5); }
+.text-glow-green  { text-shadow: 0 0 10px rgba(16, 185, 129, 0.5); }
+.text-glow-purple { text-shadow: 0 0 10px rgba(168, 85, 247, 0.5); }
+
+.glass-glow-cyan {
+  box-shadow: var(--glow-cyan), inset 0 1px 0 0 rgba(255, 255, 255, 0.05);
+}
+.glass-glow-red {
+  box-shadow: var(--glow-red), inset 0 1px 0 0 rgba(255, 255, 255, 0.05);
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.15);
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 2px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 240, 255, 0.35);
+}
+.custom-scrollbar::-webkit-scrollbar-corner {
+  background: transparent;
 }

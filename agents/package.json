@@ -1,0 +1,27 @@
+{
+  "name": "@aegis-swarm/agents",
+  "version": "1.0.0",
+  "description": "Aegis Swarm agent orchestration — TypeScript wrappers for Somnia Base Agents",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc --project tsconfig.json",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "viem": "^2.21.18",
+    "zod": "^3.23.8",
+    "dotenv": "^16.4.5",
+    "pino": "^9.5.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.9.1",
+    "typescript": "^5.6.3",
+    "tsx": "^4.19.2",
+    "vitest": "^2.1.8"
+  },
+  "main": "src/index.ts"
+}

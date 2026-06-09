@@ -1,0 +1,42 @@
+{
+  "name": "@aegis-swarm/backend",
+  "version": "1.0.0",
+  "description": "Aegis Swarm backend — Somnia data streams indexer, REST API, and PostgreSQL/Redis bridge",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch src/server.ts",
+    "build": "tsc --project tsconfig.json",
+    "start": "node dist/server.js",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint src --ext .ts",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "cors": "^2.8.6",
+    "dotenv": "^16.4.5",
+    "express": "^4.22.2",
+    "ioredis": "^5.4.1",
+    "pg": "^8.13.1",
+    "pino": "^9.5.0",
+    "socket.io": "^4.8.3",
+    "viem": "^2.21.18",
+    "ws": "^8.18.0",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@prisma/client": "^5.22.0",
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.6",
+    "@types/node": "^22.9.1",
+    "@types/pg": "^8.11.10",
+    "@types/supertest": "^7.2.0",
+    "@types/ws": "^8.5.13",
+    "eslint": "^9.15.0",
+    "prisma": "^5.22.0",
+    "supertest": "^7.2.2",
+    "tsx": "^4.19.2",
+    "typescript": "^5.6.3",
+    "vitest": "^2.1.9"
+  }
+}

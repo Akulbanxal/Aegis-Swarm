@@ -1,0 +1,36 @@
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Protocol {
+  id           String   @id @default(uuid())
+  address      String   @unique
+  name         String?
+  registeredAt DateTime @default(now())
+  incidents    Incident[]
+}
+
+model Incident {
+  id                 String   @id
+  protocolId         String
+  protocol           Protocol @relation(fields: [protocolId], references: [id])
+  targetContract     String
+  severity           Int      @default(0)
+  attackVector       String   @default("UNKNOWN")
+  defenseActionTaken String   @default("NO_ACTION")
+  defenseTxHash      String?
+  timestamp          DateTime @default(now())
+  status             String   @default("OPEN") // OPEN, RESOLVED
+}
+
+model Alert {
+  id        String   @id @default(uuid())
+  message   String
+  severity  Int
+  timestamp DateTime @default(now())
+}

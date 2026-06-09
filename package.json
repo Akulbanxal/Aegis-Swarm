@@ -18,7 +18,8 @@
     "contracts:build": "cd contracts && forge build",
     "contracts:test": "cd contracts && forge test",
     "contracts:deploy": "cd contracts && forge script script/Deploy.s.sol",
-    "setup": "npm install && npm run contracts:build"
+    "setup": "npm install && npm run contracts:build",
+    "demo": "npx tsx scripts/demo.ts"
   },
   "devDependencies": {
     "turbo": "^2.3.3",
@@ -27,5 +28,6 @@
   },
   "engines": {
     "node": ">=20.0.0"
-  }
+  },
+  "packageManager": "npm@11.6.1"
 }

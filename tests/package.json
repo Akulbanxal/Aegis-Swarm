@@ -1,0 +1,20 @@
+{
+  "name": "@aegis-swarm/tests",
+  "version": "1.0.0",
+  "description": "Aegis Swarm integration and e2e tests",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "test:e2e": "vitest run tests/e2e"
+  },
+  "devDependencies": {
+    "@types/node": "^22.9.1",
+    "typescript": "^5.6.3",
+    "vitest": "^2.1.8",
+    "@vitest/coverage-v8": "^2.1.8",
+    "viem": "^2.21.18"
+  }
+}
