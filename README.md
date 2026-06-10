@@ -12,7 +12,7 @@
 > **The first fully on-chain, AI-powered, autonomous smart contract defense system.**
 > Powered by Somnia's Agentic L1 — the only blockchain where this architecture is possible.
 
-[Live Demo]([https://aegisswarm.io](https://frontend-hvbihzr27-akuls-projects-e61c97ca.vercel.app)) · [Documentation](./docs/) · [Architecture](./ARCHITECTURE.md)
+[Live Demo]((https://frontend-hvbihzr27-akuls-projects-e61c97ca.vercel.app)) · [Documentation](./docs/) · [Architecture](./ARCHITECTURE.md)
 
 </div>
 
